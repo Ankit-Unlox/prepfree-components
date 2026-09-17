@@ -2,6 +2,7 @@ export type Job = {
   id: string;
   title: string;
   company: string;
+  icon?: string;
   companyType: string;
   location: string;
   employmentType: string;
@@ -23,3 +24,11 @@ export type ApplyResume = {
   size: string;
   updatedAt: string;
 };
+
+export type Bookmark = {
+  id: string;
+}
+
+export type Apply = {
+  id: string;
+}

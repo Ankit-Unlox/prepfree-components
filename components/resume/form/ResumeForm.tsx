@@ -14,6 +14,7 @@ import {
   type ResumeFormProps,
 } from "@/components/resume/form/types";
 import type { FormSectionRef } from "@/components/resume/form/validation";
+import ResumeHeader from "@/components/resume/ResumeHeader";
 
 function buildInitialValue(
   initialValue?: Partial<ResumeFormData>,
@@ -146,12 +147,14 @@ export function ResumeForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="min-h-screen bg-primary font-creato text-on-primary"
-    >
-      <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 lg:py-10">
+    <>
+      <ResumeHeader mode="minimal" />
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        className="min-h-screen bg-primary pt-14 font-creato text-on-primary"
+      >
+        <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 lg:py-10">
         <PersonalInformationSection
           ref={personalInformationRef}
           isUnlocked={unlockedSection >= 1}
@@ -216,8 +219,9 @@ export function ResumeForm({
             <CheckCircle2 className="h-3 w-3" /> Your progress is ready to save.
           </p>
         )}
-      </div>
-    </form>
+        </div>
+      </form>
+    </>
   );
 }
 

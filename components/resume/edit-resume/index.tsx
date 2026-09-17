@@ -5,7 +5,7 @@ import {
   createEmptyResumeData,
   type ResumeFormData,
 } from "@/components/resume/form/types";
-import ResumeHeader from "@/components/resume/edit-resume/ResumeHeader";
+import ResumeHeader from "@/components/resume/ResumeHeader";
 import ResumeRightSidebar from "@/components/resume/edit-resume/ResumeRightSidebar";
 import ResumeTemplatePanel from "@/components/resume/edit-resume/ResumeTemplatePanel";
 
