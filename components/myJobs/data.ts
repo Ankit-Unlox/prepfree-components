@@ -1,5 +1,5 @@
 import type { Job } from "./types";
-import type { Apply, ApplyResume, Bookmark } from "@/types/job";
+import type { ApplyResume } from "@/types/job";
 
 const baseJob: Job = {
   id: "1",
@@ -60,5 +60,33 @@ export function getJobById(id: string) {
 
 
 
-export const bookmarked: Bookmark[] = []
-export const applied: Apply[] = []
+export const bookmarked: string[] = [];
+export const applied: string[] = [];
+
+export function addBookmarkedId(id: string) {
+  if (!bookmarked.includes(id)) {
+    bookmarked.push(id);
+  }
+}
+
+export function removeBookmarkedId(id: string) {
+  const index = bookmarked.indexOf(id);
+  if (index !== -1) {
+    bookmarked.splice(index, 1);
+  }
+}
+
+export function addAppliedId(id: string) {
+  if (!applied.includes(id)) {
+    applied.push(id);
+  }
+}
+
+export function removeAppliedId(id: string) {
+  const index = applied.indexOf(id);
+  if (index !== -1) {
+    applied.splice(index, 1);
+  }
+}
+
+

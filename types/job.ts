@@ -25,10 +25,10 @@ export type ApplyResume = {
   updatedAt: string;
 };
 
-export type Bookmark = {
-  id: string;
-}
+// export type Bookmark = {
+//   id: string;
+// }
 
-export type Apply = {
-  id: string;
-}
+// export type Apply = {
+//   id: string;
+// }

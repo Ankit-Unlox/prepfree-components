@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Filter, SlidersVertical } from "lucide-react";
-import { jobs } from "./data";
+import { SlidersVertical } from "lucide-react";
+import {
+  applied as initialApplied,
+  bookmarked as initialBookmarked,
+  jobs,
+} from "./data";
 import { JobCard } from "./JobCard";
 
 const tabs = ["All", "Applied", "Saved"] as const;
@@ -10,6 +14,18 @@ type Tab = (typeof tabs)[number];
 
 export function MyJobs() {
   const [activeTab, setActiveTab] = useState<Tab>("All");
+  const [savedJobIds, setSavedJobIds] = useState<string[]>(() => [...initialBookmarked]);
+  const [appliedJobIds] = useState<string[]>(() => [...initialApplied]);
+
+  const setSaved = (flag: boolean, id: string) => {
+    setSavedJobIds((prev) => {
+      if (flag) {
+        return prev.includes(id) ? prev : [...prev, id];
+      }
+
+      return prev.filter((jobId) => jobId !== id);
+    });
+  };
 
   return (
     <main className="min-h-full px-4 py-6 text-on-primary">
@@ -37,16 +53,42 @@ export function MyJobs() {
               type="button"
               className="inline-flex shrink-0 items-center gap-1.5 text-[11px] text-[#62d9d8] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00aaa9]"
             >
-              <SlidersVertical
- className="h-4 w-4" />
+              <SlidersVertical className="h-4 w-4" />
               <span className="hidden sm:inline">Filter Results</span>
             </button>
           </div>
 
           <div className="overflow-hidden rounded-xl border border-white/[0.14] bg-[#0d0f0f]">
-            {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
-            ))}
+            {activeTab === "Applied"
+              ? jobs
+                  .filter((job) => appliedJobIds.includes(job.id))
+                  .map((job) => (
+                    <JobCard
+                      key={job.id}
+                      job={job}
+                      isSaved={savedJobIds.includes(job.id)}
+                      setSaved={setSaved}
+                    />
+                  ))
+              : activeTab === "Saved"
+                ? jobs
+                    .filter((job) => savedJobIds.includes(job.id))
+                    .map((job) => (
+                      <JobCard
+                        key={job.id}
+                        job={job}
+                        isSaved={savedJobIds.includes(job.id)}
+                        setSaved={setSaved}
+                      />
+                    ))
+                : jobs.map((job) => (
+                    <JobCard
+                      key={job.id}
+                      job={job}
+                      isSaved={savedJobIds.includes(job.id)}
+                      setSaved={setSaved}
+                    />
+                  ))}
           </div>
         </section>
 

@@ -15,7 +15,14 @@ import {
   Users,
   WalletCards,
 } from "lucide-react";
-import { recommendedJobs } from "./data";
+import {
+  addAppliedId,
+  applied as initialApplied,
+  bookmarked as initialBookmarked,
+  recommendedJobs,
+  addBookmarkedId,
+  removeBookmarkedId,
+} from "./data";
 import { ApplyModal, type ApplyResume } from "./ApplyModal";
 import { ApplicationSubmittedModal } from "./ApplicationSubmittedModal";
 import { RecommendedJob } from "./RecommendedJob";
@@ -31,6 +38,11 @@ export function JobDetails({ job, resumes = [] }: JobDetailsProps) {
   const [saved, setSaved] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
   const [submittedOpen, setSubmittedOpen] = useState(false);
+  const [appliedJobIds, setAppliedJobIds] = useState<string[]>(() => [...initialApplied]);
+  const [savedJobIds, setSavedJobIds] = useState<string[]>(() => [...initialBookmarked]);
+
+  const isApplied = appliedJobIds.includes(job.id);
+  const isSavedJob = savedJobIds.includes(job.id);
 
   return (
     <main className="min-h-full bg-[#020505] px-4 py-5 text-white sm:px-6 lg:px-8">
@@ -62,21 +74,34 @@ export function JobDetails({ job, resumes = [] }: JobDetailsProps) {
             <div className="mt-5 flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => setApplyOpen(true)}
-                className="rounded-md bg-secondary px-5 py-2 text-[16px] font-medium leading-1 text-on-secondary"
+                onClick={() => !isApplied && setApplyOpen(true)}
+                disabled={isApplied}
+                className="rounded-md bg-secondary px-5 py-2 text-[16px] font-medium leading-1 text-on-secondary disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Apply Now
+                {isApplied ? "Applied" : "Apply Now"}
               </button>
               <button
                 type="button"
-                aria-label={saved ? "Remove job from saved" : "Save job"}
-                aria-pressed={saved}
-                onClick={() => setSaved((value) => !value)}
+                aria-label={isSavedJob ? "Remove job from saved" : "Save job"}
+                aria-pressed={isSavedJob}
+                onClick={() => {
+                  const nextValue = !isSavedJob;
+                  setSavedJobIds((prev) => {
+                    if (nextValue) {
+                      if (prev.includes(job.id)) return prev;
+                      addBookmarkedId(job.id);
+                      return [...prev, job.id];
+                    }
+
+                    removeBookmarkedId(job.id);
+                    return prev.filter((jobId) => jobId !== job.id);
+                  });
+                }}
                 className="flex h-9 w-9 items-center justify-center rounded-md border border-on-primary bg-primary text-on-primary"
               >
                 <Bookmark
                   className="h-4 w-4"
-                  fill={saved ? "currentColor" : "none"}
+                  fill={isSavedJob ? "currentColor" : "none"}
                 />
               </button>
               <button
@@ -208,7 +233,23 @@ export function JobDetails({ job, resumes = [] }: JobDetailsProps) {
           </h2>
           <div className="space-y-2">
             {recommendedJobs.map((recommendedJob) => (
-              <RecommendedJob key={recommendedJob.id} job={recommendedJob} />
+              <RecommendedJob
+                key={recommendedJob.id}
+                job={recommendedJob}
+                isSaved={savedJobIds.includes(recommendedJob.id)}
+                onToggleSave={(id, nextSaved) => {
+                  setSavedJobIds((prev) => {
+                    if (nextSaved) {
+                      if (prev.includes(id)) return prev;
+                      addBookmarkedId(id);
+                      return [...prev, id];
+                    }
+
+                    removeBookmarkedId(id);
+                    return prev.filter((jobId) => jobId !== id);
+                  });
+                }}
+              />
             ))}
           </div>
         </aside>
@@ -218,6 +259,14 @@ export function JobDetails({ job, resumes = [] }: JobDetailsProps) {
         onClose={() => setApplyOpen(false)}
         resumes={resumes}
         onApply={() => {
+          setAppliedJobIds((prev) => {
+            if (prev.includes(job.id)) {
+              return prev;
+            }
+
+            addAppliedId(job.id);
+            return [...prev, job.id];
+          });
           setApplyOpen(false);
           setSubmittedOpen(true);
         }}

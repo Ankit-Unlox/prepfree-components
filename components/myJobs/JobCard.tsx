@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bookmark,
   BriefcaseBusiness,
@@ -15,10 +15,22 @@ import { timeAgo } from "./utils";
 
 type JobCardProps = {
   job: Job;
+  isSaved: boolean;
+  setSaved: (saved:boolean,  id:string) => void;
 };
 
-export function JobCard({ job }: JobCardProps) {
-  const [saved, setSaved] = useState(false);
+export function JobCard({ job, isSaved, setSaved}: JobCardProps) {
+  const [bookmarked, setBookmarked] = useState(isSaved);
+
+  useEffect(() => {
+    setBookmarked(isSaved);
+  }, [isSaved]);
+
+  const handleBookmarked = (id: string) => {
+    const nextValue = !bookmarked;
+    setBookmarked(nextValue);
+    setSaved(nextValue, id);
+  };
 
   return (
     <article className="border-b border-white/10 p-4 last:border-b-0 sm:p-4.5">
@@ -44,14 +56,14 @@ export function JobCard({ job }: JobCardProps) {
         </div>
         <button
           type="button"
-          aria-label={saved ? "Remove job from saved" : "Save job"}
-          aria-pressed={saved}
-          onClick={() => setSaved((value) => !value)}
+          aria-label={bookmarked ? "Remove job from saved" : "Save job"}
+          aria-pressed={bookmarked}
+          onClick={() => handleBookmarked(job.id)}
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-white/25 transition-colors hover:bg-white/6 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00aaa9]"
         >
           <Bookmark
             className="h-5 w-5"
-            fill={saved ? "currentColor" : "none"}
+            fill={bookmarked ? "currentColor" : "none"}
           />
         </button>
       </div>

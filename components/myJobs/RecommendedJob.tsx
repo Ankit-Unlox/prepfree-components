@@ -1,14 +1,30 @@
 import { Bookmark, BriefcaseBusiness, Layers3, MapPin } from "lucide-react";
 import type { Job } from "./types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import moneyImg from "@/assets/money.png";
 
 type RecommendedJobProps = {
   job: Job;
+  isSaved?: boolean;
+  onToggleSave?: (id: string, saved: boolean) => void;
 };
 
-export function RecommendedJob({ job }: RecommendedJobProps) {
-  const [saved, setSaved] = useState(false);
+export function RecommendedJob({
+  job,
+  isSaved = false,
+  onToggleSave,
+}: RecommendedJobProps) {
+  const [saved, setSaved] = useState(isSaved);
+
+  useEffect(() => {
+    setSaved(isSaved);
+  }, [isSaved]);
+
+  const handleSave = () => {
+    const nextValue = !saved;
+    setSaved(nextValue);
+    onToggleSave?.(job.id, nextValue);
+  };
 
   return (
     <article className="rounded-md border border-on-primary bg-primary p-3">
@@ -38,7 +54,7 @@ export function RecommendedJob({ job }: RecommendedJobProps) {
           type="button"
           aria-label={saved ? "Remove job from saved" : "Save job"}
           aria-pressed={saved}
-          onClick={() => setSaved((value) => !value)}
+          onClick={handleSave}
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-white/25 transition-colors hover:bg-white/6 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00aaa9]"
         >
           <Bookmark
