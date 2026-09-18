@@ -1,10 +1,21 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { createEmptyResumeData, type ResumeFormData } from "@/components/resume/form/types";
+import type { ResumeData, ResumeTemplate } from "@/types/resume";
 import ResumeTemplateOne from "@/components/resume/templets/resumeTemplateOne";
+import ResumeTemplateTwo from "@/components/resume/templets/resumeTemplateTwo";
+import ResumeTemplateThree from "@/components/resume/templets/resumeTemplateThree";
 
 type ResumeTemplatePanelProps = {
-  resumeData: ResumeFormData;
+  resumeData: ResumeFormData | ResumeData;
   accentColor: number;
+  fontFamily: string;
+  template?: ResumeTemplate;
+};
+
+const templateComponents = {
+  classic: ResumeTemplateOne,
+  modern: ResumeTemplateTwo,
+  minimal: ResumeTemplateThree,
 };
 
 function toTemplateData(value: ResumeFormData) {
@@ -55,12 +66,37 @@ function toTemplateData(value: ResumeFormData) {
   };
 }
 
+function toStoredResumeTemplateData(value: ResumeData) {
+  return {
+    ...value,
+    certifications: value.certifications.map((certification) => ({
+      ...certification,
+      title: certification.name,
+      expiryDate: certification.expirationDate,
+      description: "",
+    })),
+    additionalFields: value.additionalFields.map((field) => ({
+      ...field,
+      title: field.label,
+      description: field.value,
+    })),
+  };
+}
+
 export const ResumeTemplatePanel = forwardRef<
   { generateResumePdf: () => Promise<File | null> },
   ResumeTemplatePanelProps
->(function ResumeTemplatePanel({ resumeData, accentColor }, ref) {
+>(function ResumeTemplatePanel(
+  { resumeData, accentColor, fontFamily, template = "classic" },
+  ref,
+) {
   const [previewWidth, setPreviewWidth] = useState(0);
   const previewRef = useRef<HTMLDivElement>(null);
+  const TemplateComponent = templateComponents[template];
+  const templateData =
+    "personalInformation" in resumeData
+      ? toTemplateData(resumeData)
+      : toStoredResumeTemplateData(resumeData);
 
   useEffect(() => {
     const node = previewRef.current;
@@ -81,12 +117,15 @@ export const ResumeTemplatePanel = forwardRef<
           className="w-full overflow-hidden rounded-2xl bg-white object-cover shadow-2xl"
         >
           {previewWidth > 0 && (
-            <ResumeTemplateOne
-              ref={ref}
-              resumeData={toTemplateData(resumeData)}
-              colorIndex={accentColor}
-              containerWidth={previewWidth}
-            />
+            <div style={{ fontFamily }}>
+              <TemplateComponent
+                ref={ref}
+                resumeData={templateData}
+                colorIndex={accentColor}
+                containerWidth={previewWidth}
+                {...(template === "minimal" ? { fontFamily } : {})}
+              />
+            </div>
           )}
         </div>
       </div>

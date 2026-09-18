@@ -98,6 +98,7 @@ interface ResumeTemplateThreeProps {
     additionalFields?: AdditionalField[];
   };
   colorIndex?: number;
+  fontFamily?: string;
   containerWidth: number;
   ref: any;
 }
@@ -106,6 +107,7 @@ interface ResumeTemplateThreeProps {
 const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
   resumeData,
   colorIndex = 0,
+  fontFamily = "Arial, sans-serif",
   containerWidth,
   ref,
 }) => {
@@ -256,7 +258,7 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
     >
       <div
         className="w-full bg-container text-on-container px-10 py-8 min-h-[1100px]"
-        style={{ fontFamily: "Arial, sans-serif" }}
+        style={{ fontFamily }}
       >
         {/* Header: Name */}
         <div className="text-center">

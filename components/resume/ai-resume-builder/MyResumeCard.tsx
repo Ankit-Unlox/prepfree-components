@@ -65,7 +65,13 @@ function ResumePreview({
   );
 }
 
-function ResumeCardItem({ resume }: { resume: ResumeCard }) {
+function ResumeCardItem({
+  resume,
+  onView,
+}: {
+  resume: ResumeCard;
+  onView: (resume: ResumeCard) => void;
+}) {
 
 
   return (
@@ -79,21 +85,22 @@ function ResumeCardItem({ resume }: { resume: ResumeCard }) {
           <button
             type="button"
             title={`Edit Resume`}
-            className="cursor-pointer"
+            className="cursor-pointer hover:text-white"
           >
             <Pen className="h-4 w-4" />
           </button>
           <button
             type="button"
-            title={`More options Resume`}
-            className="cursor-pointer"
+            title={`View Resume`}
+            className="cursor-pointer hover:text-white"
+            onClick={() => onView(resume)}
           >
             <Eye className="h-4 w-4" />
           </button>
           <button
             type="button"
             title={`Delete Resume`}
-            className="cursor-pointer"
+            className="cursor-pointer hover:text-white"
           >
             <Trash2 className="h-4 w-4 text-[#CE6A6A]" />
           </button>

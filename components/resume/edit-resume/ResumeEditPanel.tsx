@@ -1,6 +1,9 @@
-import { Check } from "lucide-react";
+import ResumeTemplatePanel from "@/components/resume/edit-resume/ResumeTemplatePanel";
+import type { ResumeFormData } from "@/components/resume/form/types";
+import type { ResumeData } from "@/types/resume";
 
 type ResumeEditPanelProps = {
+  resumeData: ResumeFormData | ResumeData;
   fontFamily: string;
   accentColor: number;
   selectedTemplate: string;
@@ -11,6 +14,7 @@ type ResumeEditPanelProps = {
 };
 
 export function ResumeEditPanel({
+  resumeData,
   fontFamily,
   accentColor,
   selectedTemplate,
@@ -43,16 +47,16 @@ export function ResumeEditPanel({
 
         <p className="mb-2 mt-5 text-[10px] text-white/85">Accent Color</p>
         <div className="flex gap-2">
-          {["#ffffff", "#078e8c", "#e69c00", "#f06f0b", "#852ce0", "#376fdb", "#ff9d3b", "#ee2b82"].map((color, index) => (
+          {["#006666", "#7d47b2", "#2b98de", "#102a73", "#7d7d7d"].map((color, index) => (
             <button
               key={color}
               type="button"
-              onClick={() => onAccentChange(Math.min(index, 4))}
+                onClick={() => onAccentChange(index)}
               aria-label={`Choose accent color ${color}`}
               className="h-4 w-4 rounded-full border-2"
               style={{
                 backgroundColor: color,
-                borderColor: accentColor === Math.min(index, 4) ? "white" : "transparent",
+                 borderColor: accentColor === index ? "white" : "transparent",
               }}
             />
           ))}
@@ -78,17 +82,25 @@ export function ResumeEditPanel({
               key={template}
               type="button"
               onClick={() => onTemplateChange(template)}
-              className={`aspect-[1.05] rounded-md border p-2 text-left ${selectedTemplate === template ? "border-[#70c6c2]" : "border-white/10"}`}
+              className={`relative aspect-[1.05] rounded-md border p-2 text-left ${selectedTemplate === template ? "border-[#70c6c2]" : "border-white/10"}`}
             >
-              <div className="h-full rounded-sm bg-white p-2 text-[7px] text-[#27313a]">
-                <div className="h-2 w-1/2 bg-[#27313a]" />
-                <div className="mt-2 grid grid-cols-[35%_1fr] gap-1">
-                  <span className="h-12 bg-[#27313a]" />
-                  <span className="space-y-1">
-                    <i className="block h-1 bg-[#c5cbd0]" />
-                    <i className="block h-1 bg-[#c5cbd0]" />
-                    <i className="block h-1 bg-[#c5cbd0]" />
-                  </span>
+              <div className="absolute inset-0 overflow-hidden rounded-md bg-white">
+                <div
+                  className="origin-top-left"
+                  style={{ width: "625%", transform: "scale(0.16)" }}
+                >
+                  <ResumeTemplatePanel
+                    resumeData={resumeData}
+                    accentColor={accentColor}
+                    fontFamily={fontFamily}
+                    template={
+                      template === "Template Two"
+                        ? "modern"
+                        : template === "Template Three"
+                          ? "minimal"
+                          : "classic"
+                    }
+                  />
                 </div>
               </div>
             </button>

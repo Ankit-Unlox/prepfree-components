@@ -1,7 +1,10 @@
 import { ResumeAiPanel } from "@/components/resume/edit-resume/ResumeAiPanel";
 import { ResumeEditPanel } from "@/components/resume/edit-resume/ResumeEditPanel";
+import type { ResumeFormData } from "@/components/resume/form/types";
+import type { ResumeData } from "@/types/resume";
 
 type ResumeRightSidebarProps = {
+  resumeData: ResumeFormData | ResumeData;
   isEditing: boolean;
   isAiEnhanceOpen: boolean;
   fontFamily: string;
@@ -15,6 +18,7 @@ type ResumeRightSidebarProps = {
 };
 
 export function ResumeRightSidebar({
+  resumeData,
   isEditing,
   isAiEnhanceOpen,
   fontFamily,
@@ -29,6 +33,7 @@ export function ResumeRightSidebar({
   if (isEditing) {
     return (
       <ResumeEditPanel
+        resumeData={resumeData}
         fontFamily={fontFamily}
         accentColor={accentColor}
         selectedTemplate={selectedTemplate}

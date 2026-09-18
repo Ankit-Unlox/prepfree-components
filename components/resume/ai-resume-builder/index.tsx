@@ -141,7 +141,17 @@ export function ResumeDashboard() {
               <div className="w-full">
                 <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   {resumeCards.map((resume) => (
-                    <ResumeCardItem key={resume.id} resume={resume} />
+                    <ResumeCardItem
+                      key={resume.id}
+                      resume={resume}
+                      onView={(selectedResume) => {
+                        window.sessionStorage.setItem(
+                          "selectedResumeCard",
+                          JSON.stringify(selectedResume),
+                        );
+                        router.push("/resume/resumegenerated");
+                      }}
+                    />
                   ))}
                 </div>
               </div>
@@ -149,11 +159,8 @@ export function ResumeDashboard() {
           </div>
         )}
 
-        <div>
+        <div className="mt-10">
           <section aria-labelledby="ats-checker" className="space-y-5">
-            <h2 id="ats-checker" className="sr-only">
-              Resume optimization
-            </h2>
             {checkerItems.map((description, index) => (
               <CheckerRow
                 key={`${description}-${index}`}

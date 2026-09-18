@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   createEmptyResumeData,
   type ResumeFormData,
 } from "@/components/resume/form/types";
+import type { ResumeCard, ResumeTemplate } from "@/types/resume";
 import ResumeHeader from "@/components/resume/ResumeHeader";
 import ResumeRightSidebar from "@/components/resume/edit-resume/ResumeRightSidebar";
 import ResumeTemplatePanel from "@/components/resume/edit-resume/ResumeTemplatePanel";
@@ -53,12 +54,36 @@ const sampleResume: ResumeFormData = {
 };
 
 export function EditResume() {
+  const [selectedResume, setSelectedResume] = useState<ResumeCard | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAiEnhanceOpen, setIsAiEnhanceOpen] = useState(false);
   const [accentColor, setAccentColor] = useState(0);
   const [fontFamily, setFontFamily] = useState("Poppins");
   const [selectedTemplate, setSelectedTemplate] = useState("Template One");
   const templateRef = useRef<{ generateResumePdf: () => Promise<File | null> }>(null);
+
+  useEffect(() => {
+    const storedResume = window.sessionStorage.getItem("selectedResumeCard");
+    if (!storedResume) return;
+
+    const resume = JSON.parse(storedResume) as ResumeCard;
+    setSelectedResume(resume);
+    setSelectedTemplate(
+      resume.template === "modern"
+        ? "Template Two"
+        : resume.template === "minimal"
+          ? "Template Three"
+          : "Template One",
+    );
+  }, []);
+
+  const resumeData = selectedResume?.data ?? sampleResume;
+  const selectedTemplateKey: ResumeTemplate =
+    selectedTemplate === "Template Two"
+      ? "modern"
+      : selectedTemplate === "Template Three"
+        ? "minimal"
+        : "classic";
 
   const downloadResume = async () => {
     const file = await templateRef.current?.generateResumePdf();
@@ -100,11 +125,14 @@ export function EditResume() {
       >
         <ResumeTemplatePanel
           ref={templateRef}
-          resumeData={sampleResume}
+          resumeData={resumeData}
           accentColor={accentColor}
+          fontFamily={fontFamily}
+          template={selectedTemplateKey}
         />
 
         <ResumeRightSidebar
+          resumeData={resumeData}
           isEditing={isEditing}
           isAiEnhanceOpen={isAiEnhanceOpen}
           fontFamily={fontFamily}
