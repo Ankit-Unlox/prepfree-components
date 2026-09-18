@@ -11,6 +11,42 @@ body {
   box-sizing: border-box;
 }
 
+.resume-loader-logo {
+  position: relative;
+  isolation: isolate;
+  box-shadow: 0 0 0 8px #003f40, 0 0 0 16px #002b2c, 0 0 0 24px #001c1d;
+}
+
+.resume-loader-ripple {
+  position: absolute;
+  inset: -24px;
+  z-index: -1;
+  border: 1px solid #006666;
+  border-radius: 9999px;
+  opacity: 0;
+  animation: resume-loader-wave 2.4s ease-out infinite;
+}
+
+.resume-loader-ripple-two {
+  animation-delay: 0.8s;
+}
+
+.resume-loader-ripple-three {
+  animation-delay: 1.6s;
+}
+
+@keyframes resume-loader-wave {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.72;
+  }
+  70%,
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
 html,
 body {
   height: 100%;

@@ -21,9 +21,11 @@ import ResumeTemplateThree from "@/components/resume/templets/resumeTemplateThre
 function ResumePreview({
   template,
   data,
+  onView,
 }: {
   template: ResumeCard["template"];
   data: ResumeData;
+  onView: () => void;
 }) {
   const previewRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -50,7 +52,20 @@ function ResumePreview({
   }, []);
 
   return (
-    <div ref={previewRef} className="h-full overflow-hidden rounded-t-lg ">
+    <div
+      ref={previewRef}
+      className="h-full cursor-pointer overflow-hidden rounded-t-lg"
+      role="button"
+      tabIndex={0}
+      aria-label="View resume"
+      onClick={onView}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onView();
+        }
+      }}
+    >
       {containerWidth > 0 && (
         <TemplateComponent
           ref={null}
@@ -77,7 +92,11 @@ function ResumeCardItem({
   return (
     <article className="aspect-4/3 flex flex-col overflow-hidden rounded-xl bg-primary border">
       <div className="w-full flex-1 overflow-hidden px-3 pt-3">
-          <ResumePreview template={resume.template} data={resume.data} />
+          <ResumePreview
+            template={resume.template}
+            data={resume.data}
+            onView={() => onView(resume)}
+          />
       </div>
       <div className="w-full min-h-[20%] flex items-center justify-between gap-2 p-2 bg-[color-mix(in_srgb,var(--primary)_80%,black)]">
         <p className="font-bold text-[14px] text-on-primary">{resume.name}</p>
