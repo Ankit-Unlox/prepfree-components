@@ -9,6 +9,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
+import { ResumeEditable } from "@/components/resume/editor/ResumeEditable";
 
 const colorPalatte = ["#006666", "#7d47b2", "#2b98de", "#102a73", "#7d7d7d"];
 
@@ -183,6 +184,13 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
         onclone: (clonedDoc) => {
           // Make sure cloned document has same background for consistent rendering
           (clonedDoc.body.style as any).backgroundColor = "#ffffff";
+          clonedDoc.querySelectorAll<HTMLElement>("[data-resume-editable='true']").forEach((element) => {
+            element.style.outline = "none";
+            element.style.cursor = "inherit";
+          });
+          clonedDoc.querySelectorAll<HTMLElement>(".resume-editor-layer").forEach((element) => {
+            element.style.display = "none";
+          });
         },
       });
 
@@ -259,18 +267,23 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
       <div className="min-h-[1000px] bg-container p-5 shadow-lg text-on-container">
         {/* -------------------- HEADER -------------------- */}
         <h1 className="text-xl font-bold">
-          {profileInfo?.firstname} {profileInfo?.lastname}
+          <ResumeEditable field="profileInfo.firstname" as="span">
+            {profileInfo?.firstname}
+          </ResumeEditable>{" "}
+          <ResumeEditable field="profileInfo.lastname" as="span">
+            {profileInfo?.lastname}
+          </ResumeEditable>
         </h1>
 
         <div className="mt-1 text-xs text-on-container leading-tight">
-          {contactInfo?.email && <p>Email: {contactInfo?.email}</p>}
+          {contactInfo?.email && <p>Email: <ResumeEditable field="contactInfo.email" as="span">{contactInfo.email}</ResumeEditable></p>}
           {contactInfo?.phone_number && (
             <p>
-              Phone: {contactInfo?.country_code} {contactInfo?.phone_number}
+              Phone: {contactInfo?.country_code} <ResumeEditable field="contactInfo.phone_number" as="span">{contactInfo?.phone_number}</ResumeEditable>
             </p>
           )}
-          {contactInfo?.linkedin && <p>LinkedIn: {contactInfo?.linkedin}</p>}
-          {contactInfo?.portfolio && <p>Portfolio: {contactInfo?.portfolio}</p>}
+          {contactInfo?.linkedin && <p>LinkedIn: <ResumeEditable field="contactInfo.linkedin" as="span">{contactInfo.linkedin}</ResumeEditable></p>}
+          {contactInfo?.portfolio && <p>Portfolio: <ResumeEditable field="contactInfo.portfolio" as="span">{contactInfo.portfolio}</ResumeEditable></p>}
         </div>
 
         <hr className="my-3 border-gray-400" />
@@ -278,7 +291,9 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
         {/* -------------------- SUMMARY -------------------- */}
         <Section title="PROFILE SUMMARY" color={primaryColor}>
           {profileInfo?.description ? (
-            <p className="text-xs text-justify">{profileInfo?.description}</p>
+            <ResumeEditable field="profileInfo.description">
+              <p className="text-xs text-justify">{profileInfo?.description}</p>
+            </ResumeEditable>
           ) : (
             <Empty message="No summary added yet." />
           )}
@@ -290,9 +305,9 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
             {resumeData.education?.length ? (
               resumeData.education.map((edu: any) => (
                 <div key={edu.id} className="mb-3">
-                  <h3 className="font-semibold text-xs">{edu.institution}</h3>
+                  <h3 className="font-semibold text-xs"><ResumeEditable field={`education.${resumeData.education?.indexOf(edu)}.institution`} as="span">{edu.institution}</ResumeEditable></h3>
                   <p className="text-xs">
-                    {edu.degree} – {edu.fieldOfStudy}
+                    <ResumeEditable field={`education.${resumeData.education?.indexOf(edu)}.degree`} as="span">{edu.degree}</ResumeEditable> – {edu.fieldOfStudy}
                   </p>
                   <p className="text-xs">{edu.location}</p>
                   <p className="text-xs">
@@ -300,9 +315,9 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
                   </p>
 
                   {edu.description && (
-                    <p className="text-xs text-justify mt-1">
-                      {edu.description}
-                    </p>
+                    <ResumeEditable field={`education.${resumeData.education?.indexOf(edu)}.description`}>
+                      <p className="text-xs text-justify mt-1">{edu.description}</p>
+                    </ResumeEditable>
                   )}
                 </div>
               ))
@@ -318,9 +333,9 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
             {resumeData.experience?.length ? (
               resumeData.experience.map((exp: any) => (
                 <div key={exp.id} className="mb-3">
-                  <h3 className="font-semibold text-sm">{exp.title}</h3>
+                  <h3 className="font-semibold text-sm"><ResumeEditable field={`experience.${resumeData.experience.indexOf(exp)}.title`} as="span">{exp.title}</ResumeEditable></h3>
                   <p className="text-xs">
-                    {exp.company} • {exp.location}
+                    <ResumeEditable field={`experience.${resumeData.experience.indexOf(exp)}.company`} as="span">{exp.company}</ResumeEditable> • {exp.location}
                   </p>
                   <p className="text-xs">
                     {formatDate(exp.startDate)} –{" "}
@@ -331,7 +346,9 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
                   {exp.jobType && (
                     <p className="text-xs italic">{exp.jobType}</p>
                   )}
-                  <p className="text-xs text-justify mt-1">{exp.description}</p>
+                  <ResumeEditable field={`experience.${resumeData.experience.indexOf(exp)}.description`}>
+                    <p className="text-xs text-justify mt-1">{exp.description}</p>
+                  </ResumeEditable>
                 </div>
               ))
             ) : (
@@ -346,12 +363,14 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
             {resumeData.projects?.length ? (
               resumeData.projects.map((proj: any) => (
                 <div key={proj.id} className="mb-3">
-                  <h3 className="font-semibold text-sm">{proj.title}</h3>
+                  <h3 className="font-semibold text-sm"><ResumeEditable field={`projects.${resumeData.projects.indexOf(proj)}.title`} as="span">{proj.title}</ResumeEditable></h3>
                   <p className="text-xs">
                     {proj.role} • {proj.projectType}
                   </p>
                   <p className="text-xs italic">{proj.technologies}</p>
-                  <p className="text-xs text-justify">{proj.description}</p>
+                  <ResumeEditable field={`projects.${resumeData.projects.indexOf(proj)}.description`}>
+                    <p className="text-xs text-justify">{proj.description}</p>
+                  </ResumeEditable>
                   {proj.link && (
                     <p className="text-xs underline mt-1">{proj.link}</p>
                   )}
@@ -368,7 +387,7 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
           {resumeData.certifications?.length ? (
             resumeData.certifications.map((cert: any) => (
               <div key={cert.id} className="mb-3">
-                <h3 className="font-semibold text-sm">{cert.title}</h3>
+                <h3 className="font-semibold text-sm"><ResumeEditable field={`certifications.${resumeData.certifications.indexOf(cert)}.title`} as="span">{cert.title}</ResumeEditable></h3>
                 <p className="text-xs">{cert.issuer}</p>
                 <p className="text-xs">
                   {formatDate(cert.issueDate)} –{" "}
@@ -381,9 +400,9 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
                   <p className="text-xs underline">{cert.credentialUrl}</p>
                 )}
                 {cert.description && (
-                  <p className="text-xs text-justify mt-1">
-                    {cert.description}
-                  </p>
+                    <ResumeEditable field={`certifications.${resumeData.certifications.indexOf(cert)}.description`}>
+                      <p className="text-xs text-justify mt-1">{cert.description}</p>
+                    </ResumeEditable>
                 )}
               </div>
             ))
@@ -426,7 +445,9 @@ const ResumeTemplateTwo: React.FC<ResumeTemplateTwoProps> = ({
         {/* -------------------- ADDITIONAL SECTIONS -------------------- */}
         {resumeData.additionalFields?.map((field: any, idx: any) => (
           <Section key={idx} title={field.title} color={primaryColor}>
-            <p className="text-xs">{field.description}</p>
+            <ResumeEditable field={`additionalFields.${resumeData.additionalFields.indexOf(field)}.description`}>
+              <p className="text-xs">{field.description}</p>
+            </ResumeEditable>
           </Section>
         ))}
       </div>

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
+import { ResumeEditable } from "@/components/resume/editor/ResumeEditable";
 
 const colorPalatte = ["#006666", "#7d47b2", "#2b98de", "#102a73", "#7d7d7d"];
 
@@ -140,6 +141,20 @@ const ResumeTemplateOne: React.FC<ResumeTemplateOneProps> = ({
     try {
       const root = containerRef.current;
 
+      // Hide editor overlays before exporting so the PDF matches the original resume.
+      const editorElements = Array.from(root.querySelectorAll<HTMLElement>("[data-resume-editable='true']"));
+      const sidebarOverlay = document.querySelectorAll(".resume-editor-layer");
+      const originalOutlineStyles: { el: HTMLElement; outline?: string }[] = [];
+
+      editorElements.forEach((el) => {
+        originalOutlineStyles.push({ el, outline: el.style.outline });
+        el.style.outline = "none";
+      });
+
+      sidebarOverlay.forEach((el) => {
+        (el as HTMLElement).style.display = "none";
+      });
+
       // 🔹 Step 1: Replace unsupported colors temporarily
       const elements = Array.from(root.querySelectorAll<HTMLElement>("*"));
       const originalStyles: {
@@ -194,6 +209,14 @@ const ResumeTemplateOne: React.FC<ResumeTemplateOneProps> = ({
         if (bg) el.style.backgroundColor = bg;
         if (color) el.style.color = color;
         if (border) el.style.borderColor = border;
+      });
+
+      originalOutlineStyles.forEach(({ el, outline }) => {
+        el.style.outline = outline || "";
+      });
+
+      sidebarOverlay.forEach((el) => {
+        (el as HTMLElement).style.display = "";
       });
 
       // 🔹 Step 4: Convert canvas to PDF
@@ -347,7 +370,12 @@ const ResumeTemplateOne: React.FC<ResumeTemplateOneProps> = ({
         <div className="col-span-8 h-full p-6">
           {/* NAME SECTION */}
           <h1 className="text-3xl font-bold">
-            {profileInfo?.firstname} {profileInfo?.lastname}
+            <ResumeEditable field="profileInfo.firstname" as="span">
+              {profileInfo?.firstname}
+            </ResumeEditable>{" "}
+            <ResumeEditable field="profileInfo.lastname" as="span">
+              {profileInfo?.lastname}
+            </ResumeEditable>
           </h1>
           <div
             className="h-1 w-20 mt-1"
@@ -362,9 +390,11 @@ const ResumeTemplateOne: React.FC<ResumeTemplateOneProps> = ({
             PROFILE SUMMARY
           </h2>
           {profileInfo?.description ? (
-            <p className="text-xs mt-2 text-justify leading-relaxed">
-              {profileInfo?.description}
-            </p>
+            <ResumeEditable field="profileInfo.description">
+              <p className="text-xs mt-2 text-justify leading-relaxed">
+                {profileInfo?.description}
+              </p>
+            </ResumeEditable>
           ) : (
             <Empty label="No profile added yet." />
           )}
@@ -379,9 +409,11 @@ const ResumeTemplateOne: React.FC<ResumeTemplateOneProps> = ({
           {resumeData.experience?.length ? (
             resumeData.experience.map((exp, i) => (
               <div key={i} className="mt-3 text-xs leading-relaxed">
-                <p className="font-semibold">
-                  {exp.title} – {exp.company}
-                </p>
+                <ResumeEditable field={`experience.${i}.title`}>
+                  <p className="font-semibold">
+                    {exp.title} – {exp.company}
+                  </p>
+                </ResumeEditable>
                 <p className="text-[11px]">
                   {exp.startDate} –{" "}
                   {exp.currentlyWorkHere ? "Present" : exp.endDate}
@@ -389,7 +421,9 @@ const ResumeTemplateOne: React.FC<ResumeTemplateOneProps> = ({
                 <p className="italic text-[11px]">
                   {exp.jobType} • {exp.location}
                 </p>
-                <p className="mt-1">{exp.description}</p>
+                <ResumeEditable field={`experience.${i}.description`}>
+                  <p className="mt-1">{exp.description}</p>
+                </ResumeEditable>
               </div>
             ))
           ) : (
@@ -406,12 +440,16 @@ const ResumeTemplateOne: React.FC<ResumeTemplateOneProps> = ({
           {resumeData.projects?.length ? (
             resumeData.projects.map((proj, i) => (
               <div key={i} className="mt-3 text-xs leading-relaxed">
-                <p className="font-semibold">{proj.title}</p>
+                <ResumeEditable field={`projects.${i}.title`}>
+                  <p className="font-semibold">{proj.title}</p>
+                </ResumeEditable>
                 <p className="italic text-[11px]">
                   {proj.role} • {proj.projectType}
                 </p>
                 <p className="text-[11px]">{proj.technologies}</p>
-                <p className="mt-1">{proj.description}</p>
+                <ResumeEditable field={`projects.${i}.description`}>
+                  <p className="mt-1">{proj.description}</p>
+                </ResumeEditable>
                 {proj.link && (
                   <a
                     href={proj.link}

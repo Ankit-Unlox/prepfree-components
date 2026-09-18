@@ -9,6 +9,7 @@ import {
 } from "react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
+import { ResumeEditable } from "@/components/resume/editor/ResumeEditable";
 
 const colorPalatte = ["#006666", "#7d47b2", "#2b98de", "#102a73", "#7d7d7d"];
 
@@ -182,6 +183,13 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
         logging: false,
         onclone: (clonedDoc) => {
           (clonedDoc.body.style as any).backgroundColor = "#ffffff";
+          clonedDoc.querySelectorAll<HTMLElement>("[data-resume-editable='true']").forEach((element) => {
+            element.style.outline = "none";
+            element.style.cursor = "inherit";
+          });
+          clonedDoc.querySelectorAll<HTMLElement>(".resume-editor-layer").forEach((element) => {
+            element.style.display = "none";
+          });
         },
       });
 
@@ -265,7 +273,8 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
           <h1
             className={`text-3xl font-bold tracking-wide text-[${primaryColor}]`}
           >
-            {profileInfo?.firstname + profileInfo?.lastname || "Name"}
+            <ResumeEditable field="profileInfo.firstname" as="span">{profileInfo?.firstname}</ResumeEditable>{" "}
+            <ResumeEditable field="profileInfo.lastname" as="span">{profileInfo?.lastname}</ResumeEditable>
           </h1>
           <p className="text-sm mt-1">{profileInfo?.title}</p>
 
@@ -290,9 +299,9 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
           primaryColor={primaryColor}
         />
         {profileInfo?.description ? (
-          <p className="text-sm text-justify leading-relaxed mt-1">
-            {profileInfo.description}
-          </p>
+          <ResumeEditable field="profileInfo.description">
+            <p className="text-sm text-justify leading-relaxed mt-1">{profileInfo.description}</p>
+          </ResumeEditable>
         ) : (
           <Empty label="No summary added yet." />
         )}
@@ -307,11 +316,11 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-semibold text-sm">
-                        {exp.title}{" "}
+                        <ResumeEditable field={`experience.${idx}.title`} as="span">{exp.title}</ResumeEditable>{" "}
                         <span className="font-normal">{exp.jobType && `- ${exp.jobType}`}</span>
                       </p>
                       <p className="text-xs">
-                        {exp.company}
+                        <ResumeEditable field={`experience.${idx}.company`} as="span">{exp.company}</ResumeEditable>
                         {exp.location ? `, ${exp.location}` : ""}
                       </p>
                     </div>
@@ -328,6 +337,7 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
                   {/* Description as bullet points: split by newline if provided */}
                   {/* Description as paragraphs instead of bullets */}
                   {exp.description ? (
+                    <ResumeEditable field={`experience.${idx}.description`}>
                     <div className="mt-1 text-sm">
                       {exp.description
                         .split("\n")
@@ -341,6 +351,7 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
                           );
                         })}
                     </div>
+                    </ResumeEditable>
                   ) : null}
                 </div>
               ))
@@ -359,9 +370,9 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
                 <div key={idx} className="mt-1">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-semibold text-sm">{edu.degree}</p>
+                      <p className="font-semibold text-sm"><ResumeEditable field={`education.${idx}.degree`} as="span">{edu.degree}</ResumeEditable></p>
                       <p className="text-xs italic">
-                        {edu.institution}
+                        <ResumeEditable field={`education.${idx}.institution`} as="span">{edu.institution}</ResumeEditable>
                         {edu.location ? `, ${edu.location}` : ""}
                       </p>
                     </div>
@@ -372,7 +383,9 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
                     </div>
                   </div>
                   {edu.description && (
-                    <p className="text-sm mt-1">{edu.description}</p>
+                    <ResumeEditable field={`education.${idx}.description`}>
+                      <p className="text-sm mt-1">{edu.description}</p>
+                    </ResumeEditable>
                   )}
                 </div>
               ))
@@ -420,8 +433,8 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
           <div className="mt-1 text-sm space-y-2">
             {resumeData.projects.map((p, i) => (
               <div key={i} className="mb-2">
-                <p className="font-semibold text-base">
-                  {p.title}{" "}
+                  <p className="font-semibold text-base">
+                    <ResumeEditable field={`projects.${i}.title`} as="span">{p.title}</ResumeEditable>{" "}
                   <span className="font-normal">{p.role && `— ${p.role}`}</span>
                 </p>
 
@@ -430,7 +443,9 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
                 {p.technologies && <p className="italic">{p.technologies}</p>}
 
                 {p.description && (
-                  <p className="text-xs mt-1">{p.description}</p>
+                  <ResumeEditable field={`projects.${i}.description`}>
+                    <p className="text-xs mt-1">{p.description}</p>
+                  </ResumeEditable>
                 )}
 
                 {p.link && (
@@ -460,8 +475,8 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
             {resumeData.certifications.map((c, i) => (
               <div key={i} className="mb-2">
                 <div className="flex items-center justify-between">
-                  <p className="font-semibold text-base">
-                    {c.title}- <span className="font-normal">{c.issuer}</span>
+                    <p className="font-semibold text-base">
+                    <ResumeEditable field={`certifications.${i}.title`} as="span">{c.title}</ResumeEditable>- <span className="font-normal">{c.issuer}</span>
                   </p>
 
                   {(c.issueDate || c.expiryDate) && (
@@ -475,7 +490,9 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
                 {c.credentialId && <p>{c.credentialId}</p>}
 
                 {c.description && (
-                  <p className="text-xs mt-1">{c.description}</p>
+                  <ResumeEditable field={`certifications.${i}.description`}>
+                    <p className="text-xs mt-1">{c.description}</p>
+                  </ResumeEditable>
                 )}
 
                 {c.credentialUrl && (
@@ -502,7 +519,9 @@ const ResumeTemplateThree: React.FC<ResumeTemplateThreeProps> = ({
           ? resumeData.additionalFields.map((f, i) => (
               <div key={i}>
                 <SectionTitle title={f.title} primaryColor={primaryColor} />
-                <p className="text-sm mt-1">{f.description}</p>
+                <ResumeEditable field={`additionalFields.${i}.description`}>
+                  <p className="text-sm mt-1">{f.description}</p>
+                </ResumeEditable>
               </div>
             ))
           : null}

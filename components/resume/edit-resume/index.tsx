@@ -5,7 +5,7 @@ import {
   createEmptyResumeData,
   type ResumeFormData,
 } from "@/components/resume/form/types";
-import type { ResumeCard, ResumeTemplate } from "@/types/resume";
+import type { ResumeCard, ResumeData, ResumeTemplate } from "@/types/resume";
 import ResumeHeader from "@/components/resume/ResumeHeader";
 import ResumeRightSidebar from "@/components/resume/edit-resume/ResumeRightSidebar";
 import ResumeTemplatePanel from "@/components/resume/edit-resume/ResumeTemplatePanel";
@@ -55,6 +55,7 @@ const sampleResume: ResumeFormData = {
 
 export function EditResume() {
   const [selectedResume, setSelectedResume] = useState<ResumeCard | null>(null);
+  const [resumeData, setResumeData] = useState<ResumeFormData | ResumeData>(sampleResume);
   const [isEditing, setIsEditing] = useState(false);
   const [isAiEnhanceOpen, setIsAiEnhanceOpen] = useState(false);
   const [accentColor, setAccentColor] = useState(0);
@@ -70,6 +71,7 @@ export function EditResume() {
     if (storedResume) {
       const resume = JSON.parse(storedResume) as ResumeCard;
       setSelectedResume(resume);
+      setResumeData(resume.data);
       setSelectedTemplate(
         resume.template === "modern"
           ? "Template Two"
@@ -86,7 +88,6 @@ export function EditResume() {
     window.sessionStorage.removeItem("resumeEditorMode");
   }, []);
 
-  const resumeData = selectedResume?.data ?? sampleResume;
   const selectedTemplateKey: ResumeTemplate =
     selectedTemplate === "Template Two"
       ? "modern"
@@ -138,6 +139,7 @@ export function EditResume() {
           accentColor={accentColor}
           fontFamily={fontFamily}
           template={selectedTemplateKey}
+          onResumeDataChange={setResumeData}
         />
 
         <ResumeRightSidebar
