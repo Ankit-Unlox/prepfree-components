@@ -85,18 +85,16 @@ function ResumeCardItem({
   onView,
 }: {
   resume: ResumeCard;
-  onView: (resume: ResumeCard) => void;
+  onView: (resume: ResumeCard, mode?: "view" | "edit") => void;
 }) {
-
-
   return (
     <article className="aspect-4/3 flex flex-col overflow-hidden rounded-xl bg-primary border">
       <div className="w-full flex-1 overflow-hidden px-3 pt-3">
-          <ResumePreview
-            template={resume.template}
-            data={resume.data}
-            onView={() => onView(resume)}
-          />
+        <ResumePreview
+          template={resume.template}
+          data={resume.data}
+          onView={() => onView(resume, "view")}
+        />
       </div>
       <div className="w-full min-h-[20%] flex items-center justify-between gap-2 p-2 bg-[color-mix(in_srgb,var(--primary)_80%,black)]">
         <p className="font-bold text-[14px] text-on-primary">{resume.name}</p>
@@ -105,6 +103,7 @@ function ResumeCardItem({
             type="button"
             title={`Edit Resume`}
             className="cursor-pointer hover:text-white"
+            onClick={() => onView(resume, "edit")}
           >
             <Pen className="h-4 w-4" />
           </button>
@@ -112,7 +111,7 @@ function ResumeCardItem({
             type="button"
             title={`View Resume`}
             className="cursor-pointer hover:text-white"
-            onClick={() => onView(resume)}
+            onClick={() => onView(resume, "view")}
           >
             <Eye className="h-4 w-4" />
           </button>

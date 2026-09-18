@@ -64,17 +64,26 @@ export function EditResume() {
 
   useEffect(() => {
     const storedResume = window.sessionStorage.getItem("selectedResumeCard");
-    if (!storedResume) return;
+    const shouldOpenEdit =
+      window.sessionStorage.getItem("resumeEditorMode") === "edit";
 
-    const resume = JSON.parse(storedResume) as ResumeCard;
-    setSelectedResume(resume);
-    setSelectedTemplate(
-      resume.template === "modern"
-        ? "Template Two"
-        : resume.template === "minimal"
-          ? "Template Three"
-          : "Template One",
-    );
+    if (storedResume) {
+      const resume = JSON.parse(storedResume) as ResumeCard;
+      setSelectedResume(resume);
+      setSelectedTemplate(
+        resume.template === "modern"
+          ? "Template Two"
+          : resume.template === "minimal"
+            ? "Template Three"
+            : "Template One",
+      );
+    }
+
+    if (shouldOpenEdit) {
+      setIsEditing(true);
+    }
+
+    window.sessionStorage.removeItem("resumeEditorMode");
   }, []);
 
   const resumeData = selectedResume?.data ?? sampleResume;

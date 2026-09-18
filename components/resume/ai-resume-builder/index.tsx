@@ -144,11 +144,21 @@ export function ResumeDashboard() {
                     <ResumeCardItem
                       key={resume.id}
                       resume={resume}
-                      onView={(selectedResume) => {
+                      onView={(selectedResume, mode = "view") => {
                         window.sessionStorage.setItem(
                           "selectedResumeCard",
                           JSON.stringify(selectedResume),
                         );
+
+                        if (mode === "edit") {
+                          window.sessionStorage.setItem(
+                            "resumeEditorMode",
+                            "edit",
+                          );
+                        } else {
+                          window.sessionStorage.removeItem("resumeEditorMode");
+                        }
+
                         router.push("/resume/resumegenerated");
                       }}
                     />
