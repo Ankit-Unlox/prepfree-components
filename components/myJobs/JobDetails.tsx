@@ -19,7 +19,7 @@ import {
   addAppliedId,
   applied as initialApplied,
   bookmarked as initialBookmarked,
-  recommendedJobs,
+  jobs,
   addBookmarkedId,
   removeBookmarkedId,
 } from "./data";
@@ -35,11 +35,11 @@ type JobDetailsProps = {
 };
 
 export function JobDetails({ job, resumes = [] }: JobDetailsProps) {
-  const [saved, setSaved] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
   const [submittedOpen, setSubmittedOpen] = useState(false);
   const [appliedJobIds, setAppliedJobIds] = useState<string[]>(() => [...initialApplied]);
   const [savedJobIds, setSavedJobIds] = useState<string[]>(() => [...initialBookmarked]);
+  const recommendedJobs = jobs.filter((candidate) => candidate.id !== job.id).slice(0, 2);
 
   const isApplied = appliedJobIds.includes(job.id);
   const isSavedJob = savedJobIds.includes(job.id);

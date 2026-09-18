@@ -9,6 +9,7 @@ import {
   type TextareaHTMLAttributes,
 } from "react";
 import { PersonalInformation } from "@/components/resume/form/types";
+import { Trash } from "lucide-react";
 
 interface FieldProps {
   label: string;
@@ -182,9 +183,9 @@ export function RemoveButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="text-[11px] font-medium text-destructive transition-opacity hover:opacity-75"
+      className="cursor-pointer text-destructive transition-opacity hover:opacity-75"
     >
-      Remove
+    <Trash className="h-4 w-4"/>
     </button>
   );
 }

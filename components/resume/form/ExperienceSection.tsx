@@ -20,7 +20,7 @@ export const ExperienceSection = forwardRef<FormSectionRef, {
   const [hasNoExperience, setHasNoExperience] = useState(value === null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const dirtyFields = useRef(new Set<string>());
-  const experienceItems = value ?? [];
+  const experienceItems = value ?? [createEmptyExperience()];
 
   const getErrors = (items: ExperienceItem[] | null) => {
     if (items === null) return {};
@@ -245,8 +245,9 @@ export const ExperienceSection = forwardRef<FormSectionRef, {
         ))}
         <button
           type="button"
+          disabled={hasNoExperience}
           onClick={() => onChange([...experienceItems, createEmptyExperience()])}
-          className="flex min-h-10 w-full items-center justify-center gap-2 rounded-md border border-dashed border-on-primary/15 text-xs font-semibold text-on-primary/65 hover:border-secondary hover:text-secondary"
+          className="flex min-h-10 w-full items-center justify-center gap-2 rounded-md border border-dashed border-on-primary/15 text-xs font-semibold text-on-primary/65 hover:border-secondary hover:text-secondary disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-on-primary/15 disabled:hover:text-on-primary/65"
         >
           <Plus className="h-4 w-4" /> Add Experience
         </button>

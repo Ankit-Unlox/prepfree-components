@@ -84,7 +84,7 @@ export const CertificationsSection = forwardRef<FormSectionRef, {
       <div className="space-y-5">
         {value.map((item, index) => (
           <div key={item.id} className="space-y-4 pb-5 last:border-0 last:pb-0">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-end gap-3">
               {value.length > 1 && (
                 <RemoveButton
                   onClick={() =>
